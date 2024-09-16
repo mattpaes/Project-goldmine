@@ -1,0 +1,7 @@
+Git Branching Strategy:
+
+Initialize a new Git repository in the project directory: git init
+Create a main branch: git checkout -b main
+When starting a new feature, create a feature branch: git checkout -b feature/my-new-feature
+When the feature is complete, merge it back into main: git checkout main followed by git merge feature/my-new-feature
+
