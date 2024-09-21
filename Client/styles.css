@@ -30,6 +30,19 @@ main {
     padding: 1rem;
 }
 
+/* New styles for paragraph hover effect */
+.content p {
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.content p:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
     main {
         flex-direction: column;
