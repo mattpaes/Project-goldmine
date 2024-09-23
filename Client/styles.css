@@ -35,12 +35,43 @@ main {
     transition: all 0.3s ease;
     border-radius: 5px;
     padding: 10px;
+    padding-right: 30px;
+   
 }
 
 .content p:hover {
     background-color: #f0f0f0;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     transform: translateY(-2px);
+}
+
+/* New styles for icons hover effect */
+.paragraph-icons {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    right: 10px;
+    display: none;
+    transition: all 0.3s ease;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;    
+}
+
+.content p:hover .paragraph-icons {
+    display: flex;
+}
+
+.paragraph-icons i {
+    margin-bottom: 5px;
+    cursor: pointer;
+    color: #555;
+    transition: all 0.2s ease;
+}
+
+.paragraph-icons i:hover {
+    color: #000;
+    transform: scale(1.2);
 }
 
 @media (max-width: 768px) {
