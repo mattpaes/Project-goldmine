@@ -32,47 +32,72 @@ main {
 
 /* New styles for paragraph hover effect */
 .content p {
+    position: relative;
     transition: all 0.3s ease;
     border-radius: 5px;
     padding: 10px;
-    padding-right: 30px;
-   
+    padding-right: 40px; /* Increased right padding for hover area */
 }
 
-.content p:hover {
-    background-color: #f0f0f0;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+.content p.highlight {
+    background-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     transform: translateY(-2px);
 }
 
 /* New styles for icons hover effect */
 .paragraph-icons {
     position: absolute;
-    top: 0px;
-    bottom: 0px;
+    top: 50%;
     right: 10px;
-    display: none;
-    transition: all 0.3s ease;
+    transform: translateY(-50%);
+    display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;    
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+    pointer-events: auto; /* Allow hover events to pass through */
 }
 
-.content p:hover .paragraph-icons {
-    display: flex;
+/*.content p.highlight .paragraph-icons {
+    opacity: 1;
+    pointer-events: auto; /* Re-enable pointer events when visible 
 }
+*/
 
 .paragraph-icons i {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     cursor: pointer;
-    color: #555;
+    color: #333;
     transition: all 0.2s ease;
+    font-size: 18px;
+}
+
+.paragraph-icons i:last-child {
+    margin-bottom: 0;
 }
 
 .paragraph-icons i:hover {
     color: #000;
     transform: scale(1.2);
 }
+
+/* Styles for tagged paragraphs */
+.content p.questioned {
+    border-left: 3px solid #007bff;
+}
+
+.content p.highlighted {
+    background-color: #ffffd0;
+}
+
+.content p.commented {
+    border-bottom: 2px dashed #28a745;
+}
+
+
 
 @media (max-width: 768px) {
     main {
