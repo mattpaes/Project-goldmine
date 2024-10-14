@@ -6,12 +6,12 @@
 // at a later stage, these interactions will be shared on the cloud so that they will be all centralized
 // on the teacher screen
 function addIconsToParagraphs() {
-    console.log('addIconsToParagraphs function called');
+    //console.log('addIconsToParagraphs function called');
     const paragraphs = document.querySelectorAll('.content p');
-    console.log(`Found ${paragraphs.length} paragraphs`);
+    //console.log(`Found ${paragraphs.length} paragraphs`);
     
     paragraphs.forEach((paragraph, index) => {
-        console.log(`Processing paragraph ${index + 1}`);
+        //console.log(`Processing paragraph ${index + 1}`);
         const iconsContainer = document.createElement('div');
         iconsContainer.className = 'paragraph-icons';
         iconsContainer.innerHTML = `
@@ -36,7 +36,7 @@ function addIconsToParagraphs() {
 }
 
 function addHoverEffects(paragraph, iconsContainer) {
-    console.log('addHoverEffects function called for a paragraph');
+    //console.log('addHoverEffects function called for a paragraph');
     const hoverArea = document.createElement('div');
     hoverArea.className = 'hover-area';
     paragraph.appendChild(hoverArea);
@@ -72,7 +72,8 @@ function toggleClass(element, className) {
 }
 
 /*-----------------------------------------------------------------------------------------------------------------*/
-// the bellow functions make a set of icons appear when selecting a block of text. Two interactions are allowed : highlighting and/or
+// the bellow functions make a set of icons appear when selecting a block of text. 
+//Two interactions are allowed : highlighting and/or
 // adding a note. This information will stay saved on the students' session and will not be shared to the teacher
 
 //let currentSelection = null;
@@ -140,6 +141,7 @@ function removeSelectionIcons() {
 }
 
 function addNoteToSelection(selectedText) {
+    // eslint-disable-next-line no-console
     console.log('Adding note to:', selectedText);
     // Implement note-adding logic here
 }
@@ -162,7 +164,7 @@ function addNoteToSelection(selectedText) {
     return null;
 }*/
 
-/*-------------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------*/
 // The bellow functions are called to handle the features above
 
 function handleIconClick(action, type, content) {
@@ -198,6 +200,7 @@ function handleIconClick(action, type, content) {
 function updateStudentInteractions(action, type, paragraphIndex) {
     // This function would handle storing or sending the interaction data
     // For now, we'll just log it to the console
+    // eslint-disable-next-line no-console
     console.log(`Action: ${action}, Type: ${type}, Paragraph: ${paragraphIndex}`);
     // In a real application, you might do something like:
     // sendToServer('/api/student-interactions', { action, paragraphIndex });
@@ -205,8 +208,8 @@ function updateStudentInteractions(action, type, paragraphIndex) {
 
 // Call the function when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM content loaded');
+    //console.log('DOM content loaded');
     addIconsToParagraphs();
     setupTextSelection();
-    console.log('Text selection setup complete');
+    //console.log('Text selection setup complete');
 });
