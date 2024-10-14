@@ -71,11 +71,9 @@ function toggleClass(element, className) {
     element.classList.toggle(className);
 }
 
-
 /*-----------------------------------------------------------------------------------------------------------------*/
 // the bellow functions make a set of icons appear when selecting a block of text. Two interactions are allowed : highlighting and/or
 // adding a note. This information will stay saved on the students' session and will not be shared to the teacher
-
 
 //let currentSelection = null;
 
@@ -197,7 +195,6 @@ function handleIconClick(action, type, content) {
     updateStudentInteractions(action,type,content);
 }
 
-
 function updateStudentInteractions(action, type, paragraphIndex) {
     // This function would handle storing or sending the interaction data
     // For now, we'll just log it to the console
@@ -205,8 +202,6 @@ function updateStudentInteractions(action, type, paragraphIndex) {
     // In a real application, you might do something like:
     // sendToServer('/api/student-interactions', { action, paragraphIndex });
 }
-
-
 
 // Call the function when the page loads
 document.addEventListener('DOMContentLoaded', () => {
