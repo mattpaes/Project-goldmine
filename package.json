@@ -13,8 +13,18 @@
   "scripts": {
     "prepare": "husky install",
     "lint": "eslint .",
-    "test": "jest"
+    "pre-push": "npm run lint && npm run sonar && npm test",
+    "lint:report": "eslint . -f json -o eslint-report.json",
+    "test": "jest",
+    "sonar": "npm run lint:report && sonar-scanner"
   },
+
+  "husky": {
+      "hooks": {
+        "pre-push": "npm run pre-push"
+      }
+    },
+
   "name": "project-goldmine",
   "version": "1.0.0",
   "description": "Creating a learning platform where all nuggets can shine",
