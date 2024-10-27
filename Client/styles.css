@@ -84,7 +84,7 @@ main {
     transform: scale(1.2);
 }
 
-/* Styles for tagged paragraphs */
+/* Styles for tagged paragraphs by the user */
 .content p.questioned {
     border-left: 3px solid #007bff;
 }
@@ -97,7 +97,7 @@ main {
     border-bottom: 2px dashed #28a745;
 }
 
-/* styles for highlighted blocks of texts and resulting icons for interactions */
+/* styles for highlighted blocks of texts by the user and resulting icons for interactions */
 
 .selection-icons {
     background-color: white;
