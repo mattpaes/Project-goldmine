@@ -2,5 +2,5 @@ projectKey=project-goldmine
 serverUrl=http://localhost:9000
 serverVersion=10.7.0.96327
 dashboardUrl=http://localhost:9000/dashboard?id=project-goldmine
-ceTaskId=0adf888c-b76f-470a-886a-445fff102011
-ceTaskUrl=http://localhost:9000/api/ce/task?id=0adf888c-b76f-470a-886a-445fff102011
+ceTaskId=b77d8fd6-3118-45eb-af79-3101b4832f6d
+ceTaskUrl=http://localhost:9000/api/ce/task?id=b77d8fd6-3118-45eb-af79-3101b4832f6d
