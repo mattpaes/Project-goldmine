@@ -30,7 +30,7 @@ main {
     padding: 1rem;
 }
 
-/* New styles for paragraph hover effect */
+/* Styles for paragraph hover effect */
 .content p {
     position: relative;
     transition: all 0.3s ease;
@@ -45,7 +45,7 @@ main {
     transform: translateY(-2px);
 }
 
-/* New styles for icons hover effect */
+/* Styles for paragraph icons */
 .paragraph-icons {
     position: absolute;
     top: 50%;
@@ -58,14 +58,8 @@ main {
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 2;
-    pointer-events: auto; /* Allow hover events to pass through */
+    pointer-events: auto;
 }
-
-/*.content p.highlight .paragraph-icons {
-    opacity: 1;
-    pointer-events: auto; /* Re-enable pointer events when visible 
-}
-*/
 
 .paragraph-icons i {
     margin-bottom: 10px;
@@ -84,7 +78,7 @@ main {
     transform: scale(1.2);
 }
 
-/* Styles for tagged paragraphs by the user */
+/* Styles for paragraphs tagged by the user */
 .content p.questioned {
     border-left: 3px solid #007bff;
 }
@@ -97,8 +91,7 @@ main {
     border-bottom: 2px dashed #28a745;
 }
 
-/* styles for highlighted blocks of texts by the user and resulting icons for interactions */
-
+/* Styles for text selection and formatting */
 .selection-icons {
     background-color: white;
     border-radius: 5px;
@@ -115,12 +108,34 @@ main {
     cursor: pointer;
     font-size: 18px;
     color: #333;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .selection-icons i:hover {
     color: #000;
+    background-color: #f0f0f0;
+    border-radius: 3px;
 }
 
+/* Styles for text formatting */
+.highlighted-text {
+    background-color: #ffffd0;
+    border-radius: 2px;
+    padding: 2px 0;
+}
+
+.underlined-text {
+    border-bottom: 2px solid #333;
+    padding-bottom: 2px;
+}
+
+.bold-text {
+    font-weight: 700;
+}
 
 @media (max-width: 768px) {
     main {

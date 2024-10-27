@@ -6,12 +6,9 @@
 // at a later stage, these interactions will be shared on the cloud so that they will be all centralized
 // on the teacher screen
 function addIconsToParagraphs() {
-    //console.log('addIconsToParagraphs function called');
     const paragraphs = document.querySelectorAll('.content p');
-    //console.log(`Found ${paragraphs.length} paragraphs`);
     
     paragraphs.forEach((paragraph, index) => {
-        //console.log(`Processing paragraph ${index + 1}`);
         const iconsContainer = document.createElement('div');
         iconsContainer.className = 'paragraph-icons';
         iconsContainer.innerHTML = `
@@ -29,14 +26,13 @@ function addIconsToParagraphs() {
             icon.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const action = e.target.dataset.action;
-                handleIconClick(action,'paragraph', index);
+                handleIconClick(action, 'paragraph', index);
             });
         });
     });
 }
 
 function addHoverEffects(paragraph, iconsContainer) {
-    //console.log('addHoverEffects function called for a paragraph');
     const hoverArea = document.createElement('div');
     hoverArea.className = 'hover-area';
     paragraph.appendChild(hoverArea);
@@ -72,35 +68,26 @@ function toggleClass(element, className) {
 }
 
 /*-----------------------------------------------------------------------------------------------------------------*/
-// the bellow functions make a set of icons appear when selecting a block of text. 
-//Two interactions are allowed : highlighting and/or
-// adding a note. This information will stay saved on the students' session and will not be shared to the teacher
-
-//let currentSelection = null;
+// Functions to handle text selection and styling. Multiple styles can be applied to the same text.
+// When selecting text that overlaps with existing styled text, the style will be removed from the existing span.
+// Only completely new text selections can receive new styles.
 
 function setupTextSelection() {
     const content = document.querySelector('.content');
     
     content.addEventListener('mouseup', function(event) {
-        // Remove any existing selection icons
-        // Short delay to ensure the selection is complete (added as icons were not appearing without it)
         setTimeout(() => {
             const selection = window.getSelection();
             const selectedText = selection.toString().trim();
             
-            // Remove any existing selection icons
             removeSelectionIcons();
             
             if (selectedText.length > 0) {
-                //currentSelection = selection;            
                 showSelectionIcons(event.clientX, event.clientY, selectedText);
-            }else{
-                //currentSelection=null;
             }
         }, 10);
     });
 
-    // Click event listener to remove icons when clicking outside
     document.addEventListener('click', function(event) {
         if (!event.target.closest('.selection-icons')) {
             removeSelectionIcons();
@@ -112,16 +99,15 @@ function showSelectionIcons(mouseX, mouseY, selectedText) {
     const icons = document.createElement('div');
     icons.className = 'selection-icons';
     icons.innerHTML = `
-        <i class="fas fa-highlighter" title="Highlight" data-action="highlight"</i>
-        <i class="fas fa-comment" title="Add note"</i>
+        <i class="fas fa-highlighter" title="Highlight" data-action="highlight"></i>
+        <i class="fas fa-underline" title="Underline" data-action="underline"></i>
+        <i class="fas fa-bold" title="Bold" data-action="bold"></i>
     `;
 
-    // Position the icons at the mouse position, relative to the viewport and the document
     icons.style.position = 'absolute';
     icons.style.left = `${mouseX + window.scrollX + 10}px`;
-    icons.style.top = `${mouseY + window.scrollY}px`; // 40px below the mouse
+    icons.style.top = `${mouseY + window.scrollY}px`;
 
-    // Add click event listeners to icons
     icons.querySelectorAll('i').forEach(icon => {
         icon.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -140,36 +126,19 @@ function removeSelectionIcons() {
     }
 }
 
-function addNoteToSelection(selectedText) {
-    // eslint-disable-next-line no-console
-    console.log('Adding note to:', selectedText);
-    // Implement note-adding logic here
-}
-
-/*function getCurrentSelectionSpan() {
-    if (currentSelection && !currentSelection.isCollapsed) {
-        const range = currentSelection.getRangeAt(0);
-        let span = range.commonAncestorContainer;
-        
-        // If the selection is not already wrapped in a span, wrap it
-        if (span.nodeType !== Node.ELEMENT_NODE || span.tagName !== 'SPAN') {
-            span = document.createElement('span');
-            span.textContent = range.toString();
-            range.deleteContents();
-            range.insertNode(span);
+function checkStyledOverlap(range) {
+    const styledSpans = document.querySelectorAll('.highlighted-text, .underlined-text, .bold-text');
+    for (const span of styledSpans) {
+        if (range.intersectsNode(span)) {
+            return span;
         }
-        
-        return span;
     }
     return null;
-}*/
-
-/*-----------------------------------------------------------------------------------------------------------*/
-// The bellow functions are called to handle the features above
+}
 
 function handleIconClick(action, type, content) {
     if (type === 'paragraph') {
-        const paragraph = document.querySelectorAll('.content p')[content]; // content is paragraphIndex
+        const paragraph = document.querySelectorAll('.content p')[content];
         switch(action) {
             case 'question':
                 toggleClass(paragraph, 'questioned');
@@ -183,33 +152,71 @@ function handleIconClick(action, type, content) {
         }
         
     } else if (type === 'selection') {
-        const selection = document.querySelector(`span[data-selection="${content}"]`);
-        switch(action) {
-            case 'highlight':
-                toggleClass(selection, 'highlighted');
-                break;
-            case 'note':
-                addNoteToSelection(content); // content is selectedText
-                break;
+        const selection = window.getSelection();
+        if (!selection.rangeCount) {
+            return;
         }
+        const range = selection.getRangeAt(0);
+        const overlappingSpan = checkStyledOverlap(range);
+        
+        if (overlappingSpan) {
+            // If there's overlap, just remove the style
+            switch(action) {
+                case 'highlight':
+                    toggleClass(overlappingSpan, 'highlighted-text');
+                    break;
+                case 'underline':
+                    toggleClass(overlappingSpan, 'underlined-text');
+                    break;
+                case 'bold':
+                    toggleClass(overlappingSpan, 'bold-text');
+                    break;
+            }
+            // If span has no styles left, unwrap it
+            if (!overlappingSpan.classList.length) {
+                const parent = overlappingSpan.parentNode;
+                while (overlappingSpan.firstChild) {
+                    parent.insertBefore(overlappingSpan.firstChild, overlappingSpan);
+                }
+                parent.removeChild(overlappingSpan);
+            }
+        } else {
+            // Only apply style to completely new selections
+            const spanParent = range.commonAncestorContainer.parentElement;
+            if (!spanParent.matches('.highlighted-text, .underlined-text, .bold-text')) {
+                const span = document.createElement('span');
+                switch(action) {
+                    case 'highlight':
+                        span.className = 'highlighted-text';
+                        break;
+                    case 'underline':
+                        span.className = 'underlined-text';
+                        break;
+                    case 'bold':
+                        span.className = 'bold-text';
+                        break;
+                }
+                range.surroundContents(span);
+            }
+        }
+        selection.removeAllRanges();
+        removeSelectionIcons();
     }
 
-    updateStudentInteractions(action,type,content);
+    updateStudentInteractions(action, type, content);
 }
 
-function updateStudentInteractions(action, type, paragraphIndex) {
+function updateStudentInteractions(action, type, content) {
     // This function would handle storing or sending the interaction data
     // For now, we'll just log it to the console
     // eslint-disable-next-line no-console
-    console.log(`Action: ${action}, Type: ${type}, Paragraph: ${paragraphIndex}`);
+    console.log(`Action: ${action}, Type: ${type}, Content: ${content}`);
     // In a real application, you might do something like:
-    // sendToServer('/api/student-interactions', { action, paragraphIndex });
+    // sendToServer('/api/student-interactions', { action, content });
 }
 
 // Call the function when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    //console.log('DOM content loaded');
     addIconsToParagraphs();
     setupTextSelection();
-    //console.log('Text selection setup complete');
 });
