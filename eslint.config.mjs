@@ -7,7 +7,16 @@ export default [
   { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   pluginJs.configs.recommended,
-  pluginReact.configs.flat.recommended,
+  {
+    // Add settings object here
+    settings: {
+      react: {
+        version: 'detect'
+      }
+    },
+    // Rest of your React config
+    ...pluginReact.configs.flat.recommended
+  },
   {
     rules: {
       "no-unused-vars": "error",
