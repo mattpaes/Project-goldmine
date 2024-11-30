@@ -4,24 +4,44 @@ import pluginReact from "eslint-plugin-react";
 
 export default [
   { files: ["**/*.{js,mjs,cjs,jsx}"] },
-  { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
-  { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
+  { 
+    files: ["**/*.js"],
+    languageOptions: { 
+      sourceType: "commonjs" 
+    }
+  },
+  // Add a specific config for test files
+  {
+    files: ["**/*.test.js"],
+    languageOptions: {
+      sourceType: "module",
+      globals: {
+        ...globals.jest,  // Add Jest globals
+      }
+    }
+  },
+  { 
+    languageOptions: { 
+      globals: { 
+        ...globals.browser, 
+        ...globals.node 
+      } 
+    } 
+  },
   pluginJs.configs.recommended,
   {
-    // Add settings object here
     settings: {
       react: {
         version: 'detect'
       }
     },
-    // Rest of your React config
     ...pluginReact.configs.flat.recommended
   },
   {
     rules: {
       "no-unused-vars": "error",
       "no-undef": "error",
-      "no-console": "warn",
+      "no-console": "off",
       "eqeqeq": ["error", "always"],
       "curly": ["error", "all"],
       "brace-style": ["error", "1tbs"],

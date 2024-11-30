@@ -12,14 +12,14 @@ window.handleTextActions = {
 
 const applyTextStyle = (selection, className) => {
     if (!selection.rangeCount) {
-        return
-    };
+        return;
+    }
     
     const range = selection.getRangeAt(0);
     const overlappingSpan = checkStyledOverlap(range);
     
     if (overlappingSpan) {
-        toggleExistingStyle(overlappingSpan, className);
+        window.toggleExistingStyle(overlappingSpan, className);  // Modified
     } else {
         applyNewStyle(range, className);
     }
@@ -38,10 +38,10 @@ const checkStyledOverlap = (range) => {
     return null;
 };
 
-const toggleExistingStyle = (span, className) => {
+// Add to window object
+window.toggleExistingStyle = (span, className) => {
     span.classList.toggle(className);
     if (!span.classList.length) {
-        // If span has no styles left, unwrap it
         const parent = span.parentNode;
         while (span.firstChild) {
             parent.insertBefore(span.firstChild, span);
@@ -59,7 +59,8 @@ const applyNewStyle = (range, className) => {
     }
 };
 
-const setupTextSelection = () => {
+// Add to window object
+window.setupTextSelection = () => {
     const content = document.querySelector('.content');
     
     content.addEventListener('mouseup', function(event) {
@@ -70,7 +71,7 @@ const setupTextSelection = () => {
             removeSelectionIcons();
             
             if (selectedText.length > 0) {
-                showSelectionIcons(event.clientX, event.clientY);
+                window.showSelectionIcons(event.clientX, event.clientY);  // Modified
             }
         }, 10);
     });
@@ -82,7 +83,8 @@ const setupTextSelection = () => {
     });
 };
 
-const showSelectionIcons = (mouseX, mouseY) => {
+// Add to window object
+window.showSelectionIcons = (mouseX, mouseY) => {
     const icons = document.createElement('div');
     icons.className = 'selection-icons';
     icons.innerHTML = `
@@ -114,4 +116,4 @@ const removeSelectionIcons = () => {
 };
 
 // Initialize on load
-document.addEventListener('DOMContentLoaded', setupTextSelection);
+document.addEventListener('DOMContentLoaded', window.setupTextSelection);
