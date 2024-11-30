@@ -1,4 +1,6 @@
+// Tests/script.test.js
 import '@testing-library/jest-dom';
+import '../Client/script.js';
 
 describe('Main Script', () => {
     beforeEach(() => {
@@ -15,7 +17,6 @@ describe('Main Script', () => {
             bold: jest.fn()
         };
         
-        // Mock console.log to test interaction logging
         console.log = jest.fn();
     });
 

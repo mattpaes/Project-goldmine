@@ -6,19 +6,21 @@ module.exports = {
     },
     coveragePathIgnorePatterns: [
         '/node_modules/',
-        '/__tests__/',
-        '/dist/'
+        '/Config/',
+        '/docs/'
+    ],
+    collectCoverage: true,
+    coverageDirectory: 'coverage',
+    collectCoverageFrom: [
+        'Client/**/*.js',
+        '!Client/**/*.test.js'
     ],
     testMatch: [
-        '**/__tests__/**/*.js',
-        '**/?(*.)+(spec|test).js'
+        'Tests/**/*.test.js',
+        'Tests/**/*.spec.js'
     ],
     transform: {
         '^.+\\.js$': 'babel-jest'
     },
-    collectCoverageFrom: [
-        'src/**/*.js',
-        '!src/**/*.test.js'
-    ],
-    injectGlobals: true  // This ensures Jest globals are available
+    injectGlobals: true
 };
