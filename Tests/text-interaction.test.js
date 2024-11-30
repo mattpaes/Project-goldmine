@@ -1,6 +1,6 @@
 // Tests/textInteraction.test.js
 import '@testing-library/jest-dom';
-import '../Client/textInteractions.js';
+import '../Client/text-interactions.js';
 
 // Mock the text action handlers
 window.handleTextActions = {

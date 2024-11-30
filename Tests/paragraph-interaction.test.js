@@ -1,6 +1,6 @@
 // Tests/paragraphInteraction.test.js
 import '@testing-library/jest-dom';
-import '../Client/paragraphInteractions.js';
+import '../Client/paragraph-interactions.js';
 
 describe('Paragraph Interactions', () => {
     let container;
