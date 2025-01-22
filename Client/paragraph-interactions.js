@@ -1,5 +1,6 @@
-// Paragraph actions handlers
-window.handleParagraphActions = {
+// Client/paragraph-interactions.js
+
+const handleParagraphActions = {
     question: (paragraph) => {
         paragraph.classList.toggle('questioned');
     },
@@ -16,63 +17,9 @@ window.handleParagraphActions = {
     }
 };
 
-const addHoverEffects = (paragraph, iconsContainer) => {
-    const hoverArea = document.createElement('div');
-    hoverArea.className = 'hover-area';
-    paragraph.appendChild(hoverArea);
+// Expose just what's needed for testing
+window.handleParagraphActions = handleParagraphActions;
 
-    function showIcons() {
-        paragraph.classList.add('highlight');
-        iconsContainer.style.opacity = '1';
-    }
-
-    function hideIcons() {
-        paragraph.classList.remove('highlight');
-        iconsContainer.style.opacity = '0';
-    }
-
-    hoverArea.addEventListener('mouseenter', showIcons);
-    iconsContainer.addEventListener('mouseenter', showIcons);
-
-    hoverArea.addEventListener('mouseleave', (event) => {
-        if (!iconsContainer.contains(event.relatedTarget)) {
-            hideIcons();
-        }
-    });
-
-    iconsContainer.addEventListener('mouseleave', (event) => {
-        if (!hoverArea.contains(event.relatedTarget)) {
-            hideIcons();
-        }
-    });
-};
-
-const addIconsToParagraphs = () => {
-    const paragraphs = document.querySelectorAll('.content p');
-    
-    paragraphs.forEach(paragraph => {
-        const iconsContainer = document.createElement('div');
-        iconsContainer.className = 'paragraph-icons';
-        iconsContainer.innerHTML = `
-            <i class="fas fa-question-circle" data-action="question" title="Ask a question"></i>
-            <i class="fas fa-highlighter" data-action="highlight" title="Highlight"></i>
-            <i class="fas fa-comment" data-action="comment" title="Add a comment"></i>
-        `;
-        paragraph.appendChild(iconsContainer);
-        
-        addHoverEffects(paragraph, iconsContainer);
-        
-        iconsContainer.querySelectorAll('i').forEach(icon => {
-            icon.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const action = e.target.dataset.action;
-                window.handleIconClick(action, 'paragraph', paragraph);
-            });
-        });
-    });
-};
-
-// Comment box related functions
 const removeExistingCommentBox = () => {
     const existingBox = document.querySelector('.comment-box');
     if (existingBox) {
@@ -140,7 +87,7 @@ const addCommentIndicator = (paragraph) => {
         const indicator = document.createElement('div');
         indicator.className = 'comment-indicator';
         indicator.innerHTML = '<i class="fas fa-comment"></i>';
-        indicator.onclick = () => window.handleParagraphActions.comment(paragraph);
+        indicator.onclick = () => handleParagraphActions.comment(paragraph);
         paragraph.appendChild(indicator);
     }
 };
@@ -149,10 +96,30 @@ const removeCommentIndicator = (paragraph) => {
     paragraph.querySelector('.comment-indicator')?.remove();
 };
 
-// Initialize paragraphs
-document.addEventListener('DOMContentLoaded', () => {
-    addIconsToParagraphs();
-    document.querySelectorAll('[data-comment]').forEach(paragraph => {
-        addCommentIndicator(paragraph);
+const addIconsToParagraphs = () => {
+    const paragraphs = document.querySelectorAll('.content p');
+    
+    paragraphs.forEach(paragraph => {
+        const iconsContainer = document.createElement('div');
+        iconsContainer.className = 'paragraph-icons';
+        iconsContainer.innerHTML = `
+            <i class="fas fa-question-circle" data-action="question" title="Ask a question"></i>
+            <i class="fas fa-highlighter" data-action="highlight" title="Highlight"></i>
+            <i class="fas fa-comment" data-action="comment" title="Add a comment"></i>
+        `;
+        paragraph.appendChild(iconsContainer);
+        
+        iconsContainer.querySelectorAll('i').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const action = e.target.dataset.action;
+                if (handleParagraphActions[action]) {
+                    handleParagraphActions[action](paragraph);
+                }
+            });
+        });
     });
-});
+};
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', addIconsToParagraphs);

@@ -1,171 +1,136 @@
-// Tests/paragraphInteraction.test.js
+// tests/text-interaction.test.js
 import '@testing-library/jest-dom';
-import '../Client/paragraph-interactions.js';
+import '../Client/text-interactions.js';
 
-describe('Paragraph Interactions', () => {
+describe('Text Interactions', () => {
     let container;
-    let paragraph;
 
     beforeEach(() => {
-        // Setup test DOM
         container = document.createElement('div');
         container.className = 'content';
+        container.innerHTML = '<p>Test paragraph with selectable text</p>';
         document.body.appendChild(container);
-        
-        // Create test paragraph
-        paragraph = document.createElement('p');
-        paragraph.textContent = 'Test paragraph';
-        container.appendChild(paragraph);
-        
-        // Initialize icons
-        window.addIconsToParagraphs();
     });
 
     afterEach(() => {
         document.body.innerHTML = '';
+        jest.clearAllMocks();
     });
 
-    describe('Icon Management', () => {
-        test('adds icons container to paragraph', () => {
-            const iconsContainer = paragraph.querySelector('.paragraph-icons');
-            expect(iconsContainer).toBeTruthy();
-            expect(iconsContainer.querySelectorAll('i')).toHaveLength(3);
-        });
+    describe('Selection Toolbar', () => {
+        test('shows selection toolbar on text selection', () => {
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(container.querySelector('p'));
+            selection.removeAllRanges();
+            selection.addRange(range);
 
-        test('shows/hides icons on hover', () => {
-            const iconsContainer = paragraph.querySelector('.paragraph-icons');
-            paragraph.dispatchEvent(new MouseEvent('mouseenter'));
-            expect(paragraph).toHaveClass('highlight');
-            expect(iconsContainer.style.opacity).toBe('1');
-
-            paragraph.dispatchEvent(new MouseEvent('mouseleave'));
-            expect(paragraph).not.toHaveClass('highlight');
-            expect(iconsContainer.style.opacity).toBe('0');
-        });
-    });
-
-    describe('Multiple Paragraphs', () => {
-        test('handles multiple paragraphs', () => {
-            const paragraph2 = document.createElement('p');
-            paragraph2.textContent = 'Second paragraph';
-            container.appendChild(paragraph2);
-            
-            window.addIconsToParagraphs();
-            
-            const paragraphs = container.querySelectorAll('p');
-            expect(paragraphs).toHaveLength(2);
-            paragraphs.forEach(p => {
-                expect(p.querySelector('.paragraph-icons')).toBeTruthy();
-            });
-        });
-    });
-
-    describe('Paragraph Actions', () => {
-        test('toggles question state', () => {
-            window.handleParagraphActions.question(paragraph);
-            expect(paragraph).toHaveClass('questioned');
-
-            window.handleParagraphActions.question(paragraph);
-            expect(paragraph).not.toHaveClass('questioned');
-        });
-
-        test('toggles highlight state', () => {
-            window.handleParagraphActions.highlight(paragraph);
-            expect(paragraph).toHaveClass('highlighted');
-
-            window.handleParagraphActions.highlight(paragraph);
-            expect(paragraph).not.toHaveClass('highlighted');
-        });
-
-        test('handles comment action', () => {
-            window.handleParagraphActions.comment(paragraph);
-            const commentBox = paragraph.querySelector('.comment-box');
-            expect(commentBox).toBeTruthy();
-            expect(paragraph).toHaveClass('commenting');
-        });
-    });
-
-    describe('Comment Box Management', () => {
-        test('removes existing comment box when creating new one', () => {
-            const paragraph2 = document.createElement('p');
-            container.appendChild(paragraph2);
-            
-            window.handleParagraphActions.comment(paragraph);
-            expect(document.querySelectorAll('.comment-box')).toHaveLength(1);
-            
-            window.handleParagraphActions.comment(paragraph2);
-            expect(document.querySelectorAll('.comment-box')).toHaveLength(1);
-            expect(paragraph.querySelector('.comment-box')).toBeFalsy();
-            expect(paragraph2.querySelector('.comment-box')).toBeTruthy();
-        });
-    });
-
-    describe('Comment Management', () => {
-        test('saves comment and adds indicator', () => {
-            window.handleParagraphActions.comment(paragraph);
-            const textarea = paragraph.querySelector('.comment-input');
-            const saveButton = paragraph.querySelector('.comment-buttons button:last-child');
-            
-            textarea.value = 'Test comment';
-            saveButton.click();
-
-            expect(paragraph).toHaveClass('has-comment');
-            expect(paragraph.dataset.comment).toBe('Test comment');
-            expect(paragraph.querySelector('.comment-indicator')).toBeTruthy();
-        });
-
-        test('removes comment box on cancel', () => {
-            window.handleParagraphActions.comment(paragraph);
-            const cancelButton = paragraph.querySelector('.comment-buttons button:first-child');
-            
-            cancelButton.click();
-            
-            expect(paragraph.querySelector('.comment-box')).toBeFalsy();
-            expect(paragraph).not.toHaveClass('commenting');
-        });
-
-        test('removes empty comments', () => {
-            window.handleParagraphActions.comment(paragraph);
-            const textarea = paragraph.querySelector('.comment-input');
-            const saveButton = paragraph.querySelector('.comment-buttons button:last-child');
-            
-            textarea.value = '';
-            saveButton.click();
-
-            expect(paragraph).not.toHaveClass('has-comment');
-            expect(paragraph.dataset.comment).toBeFalsy();
-            expect(paragraph.querySelector('.comment-indicator')).toBeFalsy();
-        });
-    });
-
-    describe('Hover Effects', () => {
-        test('handles nested hover events', () => {
-            const iconsContainer = paragraph.querySelector('.paragraph-icons');
-            const hoverArea = paragraph.querySelector('.hover-area');
-            
-            // Test hover area enter
-            hoverArea.dispatchEvent(new MouseEvent('mouseenter'));
-            expect(paragraph).toHaveClass('highlight');
-            expect(iconsContainer.style.opacity).toBe('1');
-            
-            // Test icons container enter while hover area active
-            iconsContainer.dispatchEvent(new MouseEvent('mouseenter'));
-            expect(paragraph).toHaveClass('highlight');
-            expect(iconsContainer.style.opacity).toBe('1');
-            
-            // Test hover area leave to icons
-            hoverArea.dispatchEvent(new MouseEvent('mouseleave', {
-                relatedTarget: iconsContainer
+            container.dispatchEvent(new MouseEvent('mouseup', {
+                bubbles: true,
+                clientX: 100,
+                clientY: 100
             }));
-            expect(paragraph).toHaveClass('highlight');
-            expect(iconsContainer.style.opacity).toBe('1');
+
+            setTimeout(() => {
+                const toolbar = document.querySelector('.selection-icons');
+                expect(toolbar).toBeTruthy();
+                expect(toolbar.querySelectorAll('i')).toHaveLength(3);
+            }, 20);
+        });
+
+        test('removes toolbar when clicking outside', () => {
+            window.showSelectionIcons(100, 100);
+            document.body.click();
+            expect(document.querySelector('.selection-icons')).toBeFalsy();
+        });
+    });
+
+    describe('Text Styling', () => {
+        test('applies highlight style to selected text', () => {
+            const range = document.createRange();
+            const p = container.querySelector('p');
+            range.setStart(p.firstChild, 0);
+            range.setEnd(p.firstChild, 4);
             
-            // Test final leave
-            iconsContainer.dispatchEvent(new MouseEvent('mouseleave', {
-                relatedTarget: document.body
-            }));
-            expect(paragraph).not.toHaveClass('highlight');
-            expect(iconsContainer.style.opacity).toBe('0');
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            window.handleTextActions.highlight(selection);
+            
+            const highlightedSpan = container.querySelector('.highlighted-text');
+            expect(highlightedSpan).toBeTruthy();
+            expect(highlightedSpan.textContent).toBe('Test');
+        });
+
+        test('toggles existing style when reapplying', () => {
+            const p = container.querySelector('p');
+            const span = document.createElement('span');
+            span.className = 'highlighted-text';
+            span.textContent = 'Test';
+            p.insertBefore(span, p.firstChild);
+
+            const range = document.createRange();
+            range.selectNodeContents(span);
+            
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            window.handleTextActions.highlight(selection);
+            expect(p.querySelector('.highlighted-text')).toBeFalsy();
+            expect(p.textContent.startsWith('Test')).toBeTruthy();
+        });
+
+        test('applies multiple styles to same text', () => {
+            const range = document.createRange();
+            const p = container.querySelector('p');
+            range.setStart(p.firstChild, 0);
+            range.setEnd(p.firstChild, 4);
+            
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            window.handleTextActions.highlight(selection);
+            const newSelection = window.getSelection();
+            const newRange = document.createRange();
+            const highlightedSpan = p.querySelector('.highlighted-text');
+            newRange.selectNodeContents(highlightedSpan);
+            newSelection.removeAllRanges();
+            newSelection.addRange(newRange);
+            window.handleTextActions.bold(newSelection);
+
+            const styledText = p.querySelector('span');
+            expect(styledText).toHaveClass('highlighted-text', 'bold-text');
+        });
+    });
+
+    describe('Style Management', () => {
+        test('removes span when all styles are toggled off', () => {
+            const p = container.querySelector('p');
+            const span = document.createElement('span');
+            span.className = 'highlighted-text';
+            span.textContent = 'Test';
+            p.insertBefore(span, p.firstChild);
+
+            window.toggleExistingStyle(span, 'highlighted-text');
+            
+            expect(p.querySelector('span')).toBeFalsy();
+            expect(p.textContent.startsWith('Test')).toBeTruthy();
+        });
+
+        test('preserves other styles when removing one style', () => {
+            const p = container.querySelector('p');
+            const span = document.createElement('span');
+            span.className = 'highlighted-text bold-text';
+            span.textContent = 'Test';
+            p.insertBefore(span, p.firstChild);
+
+            window.toggleExistingStyle(span, 'highlighted-text');
+            
+            expect(p.querySelector('span')).toHaveClass('bold-text');
+            expect(p.querySelector('span')).not.toHaveClass('highlighted-text');
         });
     });
 });

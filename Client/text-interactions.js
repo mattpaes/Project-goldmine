@@ -1,3 +1,4 @@
+// Client/text-interactions.js
 window.handleTextActions = {
     highlight: (selection) => {
         applyTextStyle(selection, 'highlighted-text');
@@ -12,108 +13,86 @@ window.handleTextActions = {
 
 const applyTextStyle = (selection, className) => {
     if (!selection.rangeCount) {
-        return;
-    }
+        return
+    };
     
     const range = selection.getRangeAt(0);
-    const overlappingSpan = checkStyledOverlap(range);
+    const existingSpan = findStyledParent(range.commonAncestorContainer);
     
-    if (overlappingSpan) {
-        window.toggleExistingStyle(overlappingSpan, className);  // Modified
+    if (existingSpan && existingSpan.classList.contains(className)) {
+        existingSpan.classList.remove(className);
+        if (!existingSpan.classList.length) {
+            unwrapSpan(existingSpan);
+        }
+    } else if (existingSpan) {
+        existingSpan.classList.add(className);
     } else {
-        applyNewStyle(range, className);
-    }
-    
-    selection.removeAllRanges();
-    removeSelectionIcons();
-};
-
-const checkStyledOverlap = (range) => {
-    const styledSpans = document.querySelectorAll('.highlighted-text, .underlined-text, .bold-text');
-    for (const span of styledSpans) {
-        if (range.intersectsNode(span)) {
-            return span;
-        }
-    }
-    return null;
-};
-
-// Add to window object
-window.toggleExistingStyle = (span, className) => {
-    span.classList.toggle(className);
-    if (!span.classList.length) {
-        const parent = span.parentNode;
-        while (span.firstChild) {
-            parent.insertBefore(span.firstChild, span);
-        }
-        parent.removeChild(span);
-    }
-};
-
-const applyNewStyle = (range, className) => {
-    const spanParent = range.commonAncestorContainer.parentElement;
-    if (!spanParent.matches('.highlighted-text, .underlined-text, .bold-text')) {
         const span = document.createElement('span');
         span.className = className;
         range.surroundContents(span);
     }
+    
+    selection.removeAllRanges();
 };
 
-// Add to window object
-window.setupTextSelection = () => {
+const findStyledParent = (node) => {
+    let current = node;
+    while (current && current.nodeType !== Node.ELEMENT_NODE) {
+        current = current.parentNode;
+    }
+    return current && current.matches('span[class*="-text"]') ? current : null;
+};
+
+const unwrapSpan = (span) => {
+    const parent = span.parentNode;
+    while (span.firstChild) {
+        parent.insertBefore(span.firstChild, span);
+    }
+    parent.removeChild(span);
+};
+
+document.addEventListener('DOMContentLoaded', () => {
     const content = document.querySelector('.content');
     
+    if (!content) {
+        return
+    };
+
     content.addEventListener('mouseup', function(event) {
         setTimeout(() => {
             const selection = window.getSelection();
-            const selectedText = selection.toString().trim();
+            if (!selection.toString().trim()) {
+                return
+            };
+
+            const icons = document.createElement('div');
+            icons.className = 'selection-icons';
+            icons.innerHTML = `
+                <i class="fas fa-highlighter" data-action="highlight"></i>
+                <i class="fas fa-underline" data-action="underline"></i>
+                <i class="fas fa-bold" data-action="bold"></i>
+            `;
             
-            removeSelectionIcons();
-            
-            if (selectedText.length > 0) {
-                window.showSelectionIcons(event.clientX, event.clientY);  // Modified
-            }
-        }, 10);
+            icons.style.position = 'absolute';
+            icons.style.left = `${event.pageX + 10}px`;
+            icons.style.top = `${event.pageY}px`;
+
+            document.body.appendChild(icons);
+
+            icons.querySelectorAll('i').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const action = e.target.dataset.action;
+                    window.handleTextActions[action]?.(selection);
+                    icons.remove();
+                });
+            });
+        }, 0);
     });
 
     document.addEventListener('click', function(event) {
         if (!event.target.closest('.selection-icons')) {
-            removeSelectionIcons();
+            document.querySelector('.selection-icons')?.remove();
         }
     });
-};
-
-// Add to window object
-window.showSelectionIcons = (mouseX, mouseY) => {
-    const icons = document.createElement('div');
-    icons.className = 'selection-icons';
-    icons.innerHTML = `
-        <i class="fas fa-highlighter" title="Highlight" data-action="highlight"></i>
-        <i class="fas fa-underline" title="Underline" data-action="underline"></i>
-        <i class="fas fa-bold" title="Bold" data-action="bold"></i>
-    `;
-
-    icons.style.position = 'absolute';
-    icons.style.left = `${mouseX + window.scrollX + 10}px`;
-    icons.style.top = `${mouseY + window.scrollY}px`;
-
-    icons.querySelectorAll('i').forEach(icon => {
-        icon.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const action = e.target.dataset.action;
-            window.handleTextActions[action]?.(window.getSelection());
-        });
-    });
-
-    document.body.appendChild(icons);
-};
-
-const removeSelectionIcons = () => {
-    const existingIcons = document.querySelector('.selection-icons');
-    if (existingIcons) {
-        existingIcons.remove();
-    }
-};
-
-// Initialize on load
-document.addEventListener('DOMContentLoaded', window.setupTextSelection);
+});
