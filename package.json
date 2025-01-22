@@ -23,7 +23,8 @@
   "scripts": {
     "prepare": "husky install",
     "lint": "eslint .",
-    "pre-push": "npm run lint && npm test && (nc -z localhost 9000 && npm run sonar || echo 'SonarQube not running, skipping analysis' && exit 0)",
+    "check-sonar": "nc -z localhost 9000 || (echo 'SonarQube not detected - skipping analysis' && exit 0)",
+    "pre-push": "npm run lint && npm test && (npm run check-sonar && npm run sonar || exit 0)",
     "lint:report": "eslint . -f json -o eslint-report.json",
     "test": "jest",
     "test:watch": "jest --watch",
