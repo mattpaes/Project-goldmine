@@ -16,8 +16,8 @@ module.exports = {
         '!Client/**/*.test.js'
     ],
     testMatch: [
-        'tests/**/*.test.js',
-        'tests/**/*.spec.js'
+        '**/tests/**/*.test.js',
+        '**/tests/**/*.spec.js'
     ],
     transform: {
         '^.+\\.js$': 'babel-jest'
