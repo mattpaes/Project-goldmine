@@ -23,8 +23,9 @@
   "scripts": {
     "prepare": "husky install",
     "lint": "eslint .",
-    "check-sonar": "nc -z localhost 9000 || (echo 'SonarQube not detected - skipping analysis' && exit 0)",
-    "pre-push": "npm run lint && npm test && (npm run check-sonar && npm run sonar || exit 0)",
+    "check-sonar": "echo 'Checking SonarQube status...' && nc -z localhost 9000 && echo 'SonarQube running' || (echo 'SonarQube not running - analysis skipped' && exit 0)",
+    "sonar-with-status": "npm run sonar || (echo 'SonarQube analysis failed - continuing' && exit 0)",
+    "pre-push": "npm run lint && npm test && (npm run check-sonar && npm run sonar-with-status || true)",
     "lint:report": "eslint . -f json -o eslint-report.json",
     "test": "jest",
     "test:watch": "jest --watch",
